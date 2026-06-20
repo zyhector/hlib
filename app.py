@@ -1,8 +1,10 @@
 import frontmatter
+import os
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 from flask import Flask, abort, redirect, render_template, request, url_for
+from flask_httpauth import HTTPBasicAuth
 
 
 @dataclass
@@ -37,6 +39,19 @@ def load_all(data_dir: Path) -> list[Novel]:
 
 
 app = Flask(__name__)
+auth = HTTPBasicAuth()
+
+@auth.verify_password
+def verify_password(username, password):
+    return (
+        username == os.environ.get("HLIB_USER", "admin")
+        and password == os.environ["HLIB_PASSWORD"]
+    )
+
+@app.before_request
+@auth.login_required
+def require_auth():
+    pass
 novels: list[Novel] = sorted(load_all(Path("data")), key=lambda n: n.upload_time or date.min, reverse=True)
 
 
