@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ novel.title or "阅读" }}</title>
+<style>
+  body { max-width: 640px; margin: 60px auto; font-family: serif; color: #222; padding: 0 16px; line-height: 1.9; }
+  .back { font-size: 0.85rem; color: #888; text-decoration: none; display: inline-block; margin-bottom: 32px; }
+  .back:hover { color: #333; }
+  h1 { font-size: 1.3rem; margin-bottom: 8px; }
+  .meta { font-size: 0.85rem; color: #888; margin-bottom: 40px; }
+  .meta a { color: inherit; text-decoration: none; }
+  .meta a:hover { text-decoration: underline; }
+  .content { font-size: 1.05rem; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<a class="back" href="/">← 返回</a>
+<h1>{{ novel.title or "（无标题）" }}</h1>
+<div class="meta">
+  {% if novel.author %}<a href="/filter?author={{ novel.author }}">{{ novel.author }}</a>{% endif %}
+  {% if novel.series %} · <a href="/filter?series={{ novel.series }}">{{ novel.series }}</a>{% if novel.series_index %} #{{ novel.series_index }}{% endif %}{% endif %}
+  {% if novel.upload_time %} · {{ novel.upload_time }}{% endif %}
+  {% if novel.link %} · <a href="{{ novel.link }}" target="_blank" style="color:inherit">link</a>{% endif %}
+  {% if novel.tags %}<br>{% for tag in novel.tags %}<a href="/filter?tag={{ tag }}">#{{ tag }}</a> {% endfor %}{% endif %}
+</div>
+<div class="content">{{ novel.content or "" }}</div>
+</body>
+</html>
