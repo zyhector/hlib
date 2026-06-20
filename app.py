@@ -174,10 +174,15 @@ def upload():
     lines.append("")
     lines.append(content)
 
-    filename = (title or upload_time or "untitled") + ".txt"
+    stem = title or upload_time or "untitled"
     folder = Path("data") / series if series else Path("data")
     folder.mkdir(parents=True, exist_ok=True)
-    (folder / filename).write_text("\n".join(lines), encoding="utf-8")
+    path = folder / f"{stem}.txt"
+    n = 1
+    while path.exists():
+        path = folder / f"{stem} ({n}).txt"
+        n += 1
+    path.write_text("\n".join(lines), encoding="utf-8")
 
     global novels
     novels = sorted(load_all(Path("data")), key=lambda n: n.upload_time or date.min, reverse=True)
