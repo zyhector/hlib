@@ -79,6 +79,30 @@ def filter_view():
     return render_template("list.html", novels=filtered, filter_desc=filter_desc)
 
 
+@app.get("/tags")
+def tags():
+    from collections import Counter
+    counts = Counter(tag for n in novels if n.tags for tag in n.tags)
+    items = [(f"#{name}", count, f"/filter?tag={name}") for name, count in counts.most_common()]
+    return render_template("enum.html", title="标签", items=items)
+
+
+@app.get("/authors")
+def authors():
+    from collections import Counter
+    counts = Counter(n.author for n in novels if n.author)
+    items = [(name, count, f"/filter?author={name}") for name, count in counts.most_common()]
+    return render_template("enum.html", title="作者", items=items)
+
+
+@app.get("/series")
+def series():
+    from collections import Counter
+    counts = Counter(n.series for n in novels if n.series)
+    items = [(name, count, f"/filter?series={name}") for name, count in counts.most_common()]
+    return render_template("enum.html", title="系列", items=items)
+
+
 @app.get("/novel/<int:i>")
 def novel(i: int):
     if i >= len(novels):

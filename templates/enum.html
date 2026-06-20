@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ title }}</title>
+<style>
+  body { max-width: 640px; margin: 60px auto; font-family: serif; color: #222; padding: 0 16px; }
+  h1 { font-size: 1.4rem; margin-bottom: 32px; }
+  .items { font-size: 0.85rem; color: #888; }
+  .items a { color: inherit; text-decoration: none; margin-right: 12px; line-height: 2; }
+  .items a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<h1>{{ title }}</h1>
+<div class="items">
+  {% for label, count, url in items %}
+  <a href="{{ url }}">{{ label }} ({{ count }})</a>
+  {% endfor %}
+</div>
+</body>
+</html>
