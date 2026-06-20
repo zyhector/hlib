@@ -2,7 +2,7 @@ import frontmatter
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
-from flask import Flask, abort, render_template, request
+from flask import Flask, abort, redirect, render_template, request, url_for
 
 
 @dataclass
@@ -120,6 +120,54 @@ def novel(i: int):
         if pos < len(siblings) - 1:
             next_novel = siblings[pos + 1]
     return render_template("novel.html", novel=n, prev_novel=prev_novel, next_novel=next_novel)
+
+
+@app.route("/upload", methods=["GET", "POST"])
+def upload():
+    today = date.today().isoformat()
+    if request.method == "GET":
+        return render_template("upload.html", form={}, msg=None, today=today)
+
+    form = request.form
+    title = form.get("title", "").strip()
+    author = form.get("author", "").strip()
+    series = form.get("series", "").strip()
+    series_index = form.get("series_index", "").strip()
+    tags_raw = form.get("tags", "").strip()
+    link = form.get("link", "").strip()
+    upload_time = form.get("upload_time", "").strip()
+    content = form.get("content", "").strip()
+
+    tags = [t.strip() for t in tags_raw.split(",") if t.strip()] if tags_raw else []
+
+    lines = ["---"]
+    if title:
+        lines.append(f"title: {title}")
+    if author:
+        lines.append(f"author: {author}")
+    if series:
+        lines.append(f"series: {series}")
+    if series_index:
+        lines.append(f"series_index: {series_index}")
+    if tags:
+        lines.append(f"tags: {tags}")
+    if link:
+        lines.append(f"link: {link}")
+    if upload_time:
+        lines.append(f"upload_time: {upload_time}")
+    lines.append("---")
+    lines.append("")
+    lines.append(content)
+
+    filename = (title or upload_time or "untitled") + ".txt"
+    folder = Path("data") / series if series else Path("data")
+    folder.mkdir(parents=True, exist_ok=True)
+    (folder / filename).write_text("\n".join(lines), encoding="utf-8")
+
+    global novels
+    novels = sorted(load_all(Path("data")), key=lambda n: n.upload_time or date.min, reverse=True)
+
+    return redirect(url_for("index"))
 
 
 if __name__ == "__main__":
