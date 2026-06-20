@@ -107,7 +107,19 @@ def series():
 def novel(i: int):
     if i >= len(novels):
         abort(404)
-    return render_template("novel.html", novel=novels[i])
+    n = novels[i]
+    prev_novel = next_novel = None
+    if n.series:
+        siblings = sorted(
+            [(j, m) for j, m in enumerate(novels) if m.series == n.series],
+            key=lambda x: x[1].series_index or 0,
+        )
+        pos = next(p for p, (j, _) in enumerate(siblings) if j == i)
+        if pos > 0:
+            prev_novel = siblings[pos - 1]
+        if pos < len(siblings) - 1:
+            next_novel = siblings[pos + 1]
+    return render_template("novel.html", novel=n, prev_novel=prev_novel, next_novel=next_novel)
 
 
 if __name__ == "__main__":

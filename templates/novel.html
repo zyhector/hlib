@@ -13,6 +13,9 @@
   .meta a { color: inherit; text-decoration: none; }
   .meta a:hover { text-decoration: underline; }
   .content { font-size: 1.05rem; white-space: pre-wrap; }
+  .nav { font-size: 0.85rem; color: #888; margin-top: 48px; display: flex; justify-content: space-between; }
+  .nav a { color: inherit; text-decoration: none; }
+  .nav a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -26,5 +29,11 @@
   {% if novel.tags %}<br>{% for tag in novel.tags %}<a href="/filter?tag={{ tag }}">#{{ tag }}</a> {% endfor %}{% endif %}
 </div>
 <div class="content">{{ novel.content or "" }}</div>
+{% if prev_novel or next_novel %}
+<div class="nav">
+  <span>{% if prev_novel %}<a href="/novel/{{ prev_novel[0] }}">← {{ prev_novel[1].title or "上一篇" }}</a>{% endif %}</span>
+  <span>{% if next_novel %}<a href="/novel/{{ next_novel[0] }}">{{ next_novel[1].title or "下一篇" }} →</a>{% endif %}</span>
+</div>
+{% endif %}
 </body>
 </html>
